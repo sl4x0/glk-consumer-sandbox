@@ -1,0 +1,177 @@
+components:
+- name: github.com/gardener/gardener
+  sourceRepository: https://github.com/gardener/gardener
+  version: v1.153.5
+- name: github.com/gardener/gardener-extension-networking-calico
+  resources:
+    admissionCalicoApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/admission-calico-application
+    admissionCalicoRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/admission-calico-runtime
+    networkingCalico:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/networking-calico
+  sourceRepository: https://github.com/gardener/gardener-extension-networking-calico
+  version: v1.60.3
+- name: github.com/gardener/gardener-extension-networking-cilium
+  resources:
+    admissionCiliumApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/admission-cilium-application
+    admissionCiliumRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/admission-cilium-runtime
+    networkingCilium:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/networking-cilium
+  sourceRepository: https://github.com/gardener/gardener-extension-networking-cilium
+  version: v1.50.0
+- name: github.com/gardener/gardener-extension-os-gardenlinux
+  resources:
+    osGardenlinux:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/os-gardenlinux
+  sourceRepository: https://github.com/gardener/gardener-extension-os-gardenlinux
+  version: v0.51.0
+- name: github.com/gardener/gardener-extension-os-suse-chost
+  resources:
+    osSuseChost:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/public/charts/gardener/extensions/os-suse-chost
+  sourceRepository: https://github.com/gardener/gardener-extension-os-suse-chost
+  version: v1.47.0
+- name: github.com/gardener/gardener-extension-provider-alicloud
+  resources:
+    admissionAlicloudApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-alicloud-application
+    admissionAlicloudRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-alicloud-runtime
+    providerAlicloud:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/provider-alicloud
+  sourceRepository: https://github.com/gardener/gardener-extension-provider-alicloud
+  version: v1.75.0
+- name: github.com/gardener/gardener-extension-provider-aws
+  resources:
+    admissionAwsApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-aws-application
+    admissionAwsRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-aws-runtime
+    providerAws:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/provider-aws
+  sourceRepository: https://github.com/gardener/gardener-extension-provider-aws
+  version: v1.76.2
+- name: github.com/gardener/gardener-extension-provider-azure
+  resources:
+    admissionAzureApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-azure-application
+    admissionAzureRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-azure-runtime
+    providerAzure:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/provider-azure
+  sourceRepository: https://github.com/gardener/gardener-extension-provider-azure
+  version: v1.66.0
+- name: github.com/gardener/gardener-extension-provider-gcp
+  resources:
+    admissionGcpApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-gcp-application
+    admissionGcpRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-gcp-runtime
+    providerGcp:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/provider-gcp
+  sourceRepository: https://github.com/gardener/gardener-extension-provider-gcp
+  version: v1.58.1
+- name: github.com/gardener/gardener-extension-provider-openstack
+  resources:
+    admissionOpenstackApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-openstack-application
+    admissionOpenstackRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/admission-openstack-runtime
+    providerOpenstack:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/provider-openstack
+  sourceRepository: https://github.com/gardener/gardener-extension-provider-openstack
+  version: v1.59.1
+- name: github.com/gardener/gardener-extension-runtime-gvisor
+  resources:
+    runtimeGvisor:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/runtime-gvisor
+  sourceRepository: https://github.com/gardener/gardener-extension-runtime-gvisor
+  version: v0.51.0
+- name: github.com/gardener/gardener-extension-shoot-cert-service
+  resources:
+    shootCertService:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/shoot-cert-service
+  sourceRepository: https://github.com/gardener/gardener-extension-shoot-cert-service
+  version: v1.67.0
+- name: github.com/gardener/gardener-extension-shoot-dns-service
+  resources:
+    shootDnsService:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/shoot-dns-service
+    shootDnsServiceAdmissionApplication:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/shoot-dns-service-admission-application
+    shootDnsServiceAdmissionRuntime:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/shoot-dns-service-admission-runtime
+  sourceRepository: https://github.com/gardener/gardener-extension-shoot-dns-service
+  version: v1.96.0
+- name: github.com/gardener/gardener-extension-shoot-networking-problemdetector
+  resources:
+    shootNetworkingProblemdetector:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/shoot-networking-problemdetector
+  sourceRepository: https://github.com/gardener/gardener-extension-shoot-networking-problemdetector
+  version: v0.34.1
+- name: github.com/gardener/gardener-extension-shoot-oidc-service
+  resources:
+    shootOidcService:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/shoot-oidc-service
+  sourceRepository: https://github.com/gardener/gardener-extension-shoot-oidc-service
+  version: v0.41.0
+- name: github.com/gardener/gardener-extension-shoot-traefik
+  resources:
+    shootTraefik:
+      helmChart:
+        repository: europe-docker.pkg.dev/gardener-project/releases/charts/gardener/extensions/shoot-traefik
+  sourceRepository: https://github.com/gardener/gardener-extension-shoot-traefik
+  version: v0.12.0
+- imageVectorOverwrite:
+    images:
+    - name: flux-cli
+      repository: ghcr.io/fluxcd/flux-cli
+      tag: v2.10.0
+    - name: helm-controller
+      repository: europe-docker.pkg.dev/gardener-project/public/gardener/gardener-landscape-kit/flux/helm-controller
+      tag: v1.7.1-glk.ff7f56f@sha256:4203aa5bd20369fcf1c75f040d746a2b88f8d21dc11a87150b29c71d80fcb755
+    - name: kustomize-controller
+      repository: europe-docker.pkg.dev/gardener-project/public/gardener/gardener-landscape-kit/flux/kustomize-controller
+      tag: v1.10.1-glk.ff7f56f@sha256:a1f320698808fa5fdeeb0ae72ab5980541dc0daff07b708568c6604de37557f2
+    - name: notification-controller
+      repository: europe-docker.pkg.dev/gardener-project/public/gardener/gardener-landscape-kit/flux/notification-controller
+      tag: v1.10.0-glk.ff7f56f@sha256:0996a3c0eca02d5a0f819db175c3084b2e0cdbf0da427712275853d06da54d57
+    - name: source-controller
+      repository: europe-docker.pkg.dev/gardener-project/public/gardener/gardener-landscape-kit/flux/source-controller
+      tag: v1.10.1-glk.ff7f56f@sha256:1f062e94bf94133956a2faa1e29e4618f3b9b071df15a2839ed12ea73c2e26fb
+  name: github.com/gardener/gardener-landscape-kit
+  sourceRepository: https://github.com/gardener/gardener-landscape-kit
+  version: v0.9.0
