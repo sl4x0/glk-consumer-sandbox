@@ -1,0 +1,181 @@
+# This file is managed by gardener-landscape-kit (github component) and will be
+# overwritten on every 'glk generate' invocation. To stop glk from managing
+# this file, exclude the 'github' component in your glk configuration:
+#
+#   components:
+#     exclude:
+#     - github
+#
+# Reusable workflow for running GLK commands in a pull request context.
+# It checks out the PR branch, runs specified GLK commands, and commits any changes back to the PR branch.
+name: GLK PR Workflow
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: 'Runner to use for the job'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      glk-commands:
+        description: 'GLK commands to execute (newline-separated)'
+        required: true
+        type: string
+      components-file:
+        description: 'Path to components.yaml file (used when version is not set)'
+        required: false
+        type: string
+      commit-message:
+        description: 'Commit message for generated changes'
+        required: false
+        type: string
+        default: 'chore: run gardener-landscape-kit'
+      status-context:
+        description: 'GitHub commit status context name to set on the pushed commit (must match the required check name in branch protection)'
+        required: false
+        type: string
+        default: 'glk-generate / glk'
+      set-commit-status:
+        description: 'Whether to set a GitHub commit status on the pushed commit'
+        required: false
+        type: boolean
+        default: true
+      image-base:
+        description: Base image for GLK, default is the public registry.
+        required: false
+        type: string
+        default: europe-docker.pkg.dev/gardener-project/public/gardener/gardener-landscape-kit
+      image-tag:
+        description: 'GLK version to use. Takes precedence over components-file when set.'
+        required: false
+        type: string
+      pre-generate-commands:
+        description: 'Optional bash commands to run before GLK commands but after checkout.'
+        required: false
+        type: string
+        default: ''
+      post-generate-commands:
+        description: 'Optional bash commands to run after GLK commands but before committing.'
+        required: false
+        type: string
+        default: ''
+      fork-mode:
+        description: >
+          When true, the workflow runs in read-only fork mode: it generates but does not push.
+          If the generation produces a diff, the job fails with a descriptive message and posts
+          a failure status to the PR. If there is no diff, it posts a success status.
+        required: false
+        type: boolean
+        default: false
+      oci-auth-username:
+        description: 'OCI registry username for authentication (optional)'
+        required: false
+        type: string
+
+    secrets:
+      oci-auth-password:
+        description: 'OCI registry password for authentication (optional)'
+        required: false
+
+jobs:
+  glk:
+    runs-on: ${{ inputs.runs-on }}
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: write
+
+    steps:
+    - name: Checkout PR branch
+      uses: actions/checkout@v7
+      with:
+        submodules: 'true'
+        token: ${{ secrets.GITHUB_TOKEN }}
+        ref: ${{ github.event.pull_request.head.sha || github.ref }}
+        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
+    - name: Set up Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Pre-generate commands
+      if: ${{ inputs.pre-generate-commands != '' }}
+      run: ${{ inputs.pre-generate-commands }}
+
+    - name: GLK Commands
+      uses: ./.github/actions/glk
+      with:
+        components-file: ${{ inputs.components-file }}
+        image-tag: ${{ inputs.image-tag }}
+        commands: ${{ inputs.glk-commands }}
+        image-base: ${{ inputs.image-base }}
+      env:
+        GLK_OCI_REG_USERNAME: ${{ inputs.oci-auth-username }}
+        GLK_OCI_REG_PASSWORD: ${{ secrets.oci-auth-password }}
+
+    - name: Post-generate commands
+      if: ${{ inputs.post-generate-commands != '' }}
+      run: ${{ inputs.post-generate-commands }}
+
+    - name: Commit and push changes
+      if: ${{ !inputs.fork-mode }}
+      id: push
+      run: |
+        git add .
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "${{ inputs.commit-message }}"
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Set status on pushed commit
+      if: ${{ !inputs.fork-mode && inputs.set-commit-status && steps.push.outputs.pushed == 'true' }}
+      run: |
+        curl -sS -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github+json" \
+          "${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ steps.push.outputs.sha }}" \
+          -d "{\"state\":\"success\",\"context\":\"${{ inputs.status-context }}\",\"description\":\"GLK generation completed\"}" || true
+
+    - name: Check for diff (fork mode)
+      if: ${{ inputs.fork-mode }}
+      id: fork-diff
+      run: |
+        if git status --porcelain --untracked-files=normal | grep -q .; then
+          echo "has-diff=true" >> "$GITHUB_OUTPUT"
+          echo "### GLK generation produced uncommitted changes" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          git status --short >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "has-diff=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Post status to PR (fork-mode)
+      if: ${{ inputs.fork-mode && inputs.set-commit-status }}
+      run: |
+        if [[ "${{ steps.fork-diff.outputs.has-diff }}" == "true" ]]; then
+          state="failure"
+          description="GLK generation produced a diff. Open PR from the upstream repo (not a fork) or run 'glk generate base -c base/glk-config.yaml ./' manually."
+        else
+          state="success"
+          description="GLK generation produced no diff."
+        fi
+        curl -sS -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github+json" \
+          "${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}" \
+          -d "{\"state\":\"${state}\",\"context\":\"${{ inputs.status-context }}\",\"description\":\"${description}\"}" || true
+
+    - name: Fail if diff detected (fork mode)
+      if: ${{ inputs.fork-mode && steps.fork-diff.outputs.has-diff == 'true' }}
+      run: |
+        echo "GLK generation produced a diff that cannot be pushed to a fork."
+        echo "Please either open this PR from a branch in the upstream repository,"
+        echo "or run 'glk generate' locally and commit the results before opening the PR."
+        exit 1

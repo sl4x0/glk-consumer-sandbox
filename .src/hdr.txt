@@ -1,0 +1,8 @@
+# This file is managed by gardener-landscape-kit (github component) and will be
+# overwritten on every 'glk generate' invocation. To stop glk from managing
+# this file, exclude the 'github' component in your glk configuration:
+#
+#   components:
+#     exclude:
+#     - github
+#

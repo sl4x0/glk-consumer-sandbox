@@ -1,0 +1,4 @@
+apiVersion: landscape.config.gardener.cloud/v1alpha1
+kind: LandscapeKitConfiguration
+components:
+- name: github
