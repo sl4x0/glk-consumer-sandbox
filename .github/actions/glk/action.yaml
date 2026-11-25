@@ -124,5 +124,3 @@ runs:
       else
         echo "Successfully executed $command_number command(s)"
       fi
-
-# tamper marker (forces glk generate to restore this file)
